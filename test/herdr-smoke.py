@@ -167,7 +167,9 @@ def main():
             def get_channel():
                 send(parent, "/todos share")
                 s = see(parent, "Local board connection:")
-                return re.search(r"connection: ([a-f0-9]{32})", s)[1]
+                # A narrow split can wrap the connection ID across terminal rows.
+                compact = "".join(s.split())
+                return re.search(r"Localboardconnection:([a-f0-9]{32})", compact)[1]
 
             if APP:
                 send(parent, "/todos herdr")

@@ -155,7 +155,7 @@ export default function todos(pi) {
 				if (q.command === "share") {
 					const s = await connect(ctx);
 					return ctx.ui.notify(
-						`Local board connection: ${s.id}\nClose it with /todos unshare.`,
+						`Local board connection:\n${s.id}\nClose it with /todos unshare.`,
 						"info",
 					);
 				}

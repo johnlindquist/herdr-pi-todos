@@ -132,7 +132,9 @@ def main():
             wait("doing  Review the guide")
             submit("/todos share")
             output = wait("Local board connection:")
-            id = re.search(r"connection: ([0-9a-f]{32})", output).group(1)
+            id = re.search(
+                r"Localboardconnection:([0-9a-f]{32})", "".join(output.split())
+            )[1]
             submit("/todos")
             wait("Search tasks…")
             typein("release")
