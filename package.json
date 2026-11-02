@@ -1,0 +1,42 @@
+{
+	"name": "herdr-pi-todos",
+	"version": "0.1.0",
+	"description": "On-demand, branch-aware task boards for Pi with an editable Herdr companion.",
+	"type": "module",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/johnlindquist/herdr-pi-todos.git"
+	},
+	"keywords": [
+		"pi-package",
+		"pi-extension",
+		"herdr",
+		"todos"
+	],
+	"engines": {
+		"node": ">=22.19.0"
+	},
+	"bin": {
+		"herdr-pi-todos": "./bin/todos.mjs"
+	},
+	"pi": {
+		"extensions": [
+			"./index.mjs"
+		]
+	},
+	"files": [
+		"index.mjs",
+		"lib",
+		"bin",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"test": "node --test test/*.test.mjs"
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-coding-agent": ">=1.4.0 <2",
+		"@earendil-works/pi-tui": ">=1.4.0 <2"
+	}
+}

@@ -1,0 +1,39 @@
+name: Test
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  boards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - run: node --test test/*.test.mjs
+      - name: Install the test hosts in temporary directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y tmux xvfb xauth mesa-vulkan-drivers libxkbcommon-x11-0 libxcb-xkb1 libfontconfig1
+          npm install --prefix "$RUNNER_TEMP/test-pi" --ignore-scripts --no-audit --no-fund @earendil-works/pi-coding-agent@1.5.0
+          cd "$RUNNER_TEMP"; mkdir herdr-bin
+          curl --fail --location --retry 2 https://releases.herdr.dev/app/0.1.12/herdr-app-linux-x86_64.tar.gz -o app.tgz
+          curl --fail --location --retry 2 https://releases.herdr.dev/core/0.1.17/herdr-core-linux-x86_64.tar.gz -o core.tgz
+          echo 'a265e6c925c487458406741ffa09d2fa0d3d4bd401a34ed8c01c336108e57c1f  app.tgz' | sha256sum -c -
+          echo '82ec44043f6894bfdb716b979b87cda43fd7fa46b0104e7b7bd93e64d1a9b877  core.tgz' | sha256sum -c -
+          tar -xzf app.tgz; tar -xzf core.tgz
+          ln -s "$RUNNER_TEMP/herdr-app/herdr-app" herdr-bin/herdr-app
+          ln -s "$RUNNER_TEMP/herdr-core" herdr-bin/hc
+          echo "$RUNNER_TEMP/test-pi/node_modules/.bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/herdr-bin" >> "$GITHUB_PATH"
+      - run: python3 test/pi-smoke.py
+      - name: Test the real Herdr window on a private display
+        run: xvfb-run -a -s '-screen 0 1440x900x24' env HERDR_TODOS_SANDBOX_DISPLAY=1 HERDR_TODOS_TEST_SHOT="$RUNNER_TEMP/board.png" python3 test/herdr-smoke.py --app
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: herdr-board
+          path: ${{ runner.temp }}/board.png
+          if-no-files-found: error
