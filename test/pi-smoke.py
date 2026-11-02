@@ -110,7 +110,7 @@ def main():
 
         try:
             start()
-            wait("check")
+            wait("Fixture ready")
             submit("Create the fixture task")
             wait("Fixture turn finished.")
             assert "Search tasks…" not in screen()
@@ -179,7 +179,7 @@ def main():
             wait("doing  Inspect the release  @Sam")
             t("kill-session", "-t", "board")
             start()
-            wait("check")
+            wait("Fixture ready")
             submit("/todos list in_progress")
             out = wait("doing  Review the guide")
             assert "doing  Inspect the release" in out

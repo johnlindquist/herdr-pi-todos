@@ -2,6 +2,9 @@
 // the second completes the turn. No network, credentials, or model inference.
 import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 export default function fixture(pi) {
+	pi.on("session_start", (_event, ctx) =>
+		ctx.ui.setStatus("board-fixture", "Fixture ready"),
+	);
 	const cost = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
 	pi.registerProvider("board-fixture", {
 		api: "board-fixture-local",

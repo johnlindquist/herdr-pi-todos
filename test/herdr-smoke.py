@@ -160,7 +160,7 @@ def main():
                 parent = info["terminal"]
             else:
                 parent = j("hc", "run", "--bg", "--no-notify", "--", *argv)["address"]
-            see(parent, "check")
+            see(parent, "Fixture ready")
             send(parent, "Add the fixture task")
             see(parent, "Fixture turn finished.")
 

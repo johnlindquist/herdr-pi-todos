@@ -17,7 +17,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y tmux xvfb xauth mesa-vulkan-drivers libxkbcommon-x11-0 libxcb-xkb1 libfontconfig1
+          sudo apt-get install -y tmux fd-find ripgrep xvfb xauth mesa-vulkan-drivers libxkbcommon-x11-0 libxcb-xkb1 libfontconfig1
           npm install --prefix "$RUNNER_TEMP/test-pi" --ignore-scripts --no-audit --no-fund @earendil-works/pi-coding-agent@1.5.0
           cd "$RUNNER_TEMP"; mkdir herdr-bin
           curl --fail --location --retry 2 https://releases.herdr.dev/app/0.1.12/herdr-app-linux-x86_64.tar.gz -o app.tgz
@@ -27,6 +27,7 @@ jobs:
           tar -xzf app.tgz; tar -xzf core.tgz
           ln -s "$RUNNER_TEMP/herdr-app/herdr-app" herdr-bin/herdr-app
           ln -s "$RUNNER_TEMP/herdr-core" herdr-bin/hc
+          ln -s /usr/bin/fdfind herdr-bin/fd
           echo "$RUNNER_TEMP/test-pi/node_modules/.bin" >> "$GITHUB_PATH"
           echo "$RUNNER_TEMP/herdr-bin" >> "$GITHUB_PATH"
       - run: python3 test/pi-smoke.py
