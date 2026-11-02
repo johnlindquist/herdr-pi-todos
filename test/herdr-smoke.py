@@ -138,6 +138,15 @@ def main():
         run("hc", "server", "start")
         try:
             if APP:
+                # Model an existing Herdr installation, not the first-launch tour.
+                # Only onboarding flags are seeded; all tasks and panes are created live.
+                version = run("herdr-app", "--version").split()[-1]
+                (d / "app/shared.json").write_text(
+                    json.dumps({"frame.welcomed": "skipped", "workspace.panels": []})
+                )
+                (d / "app/update-notes.json").write_text(
+                    json.dumps({"last_run": version, "presented": [version]})
+                )
                 with open(d / "window.log", "w") as log:
                     win = sp.Popen(
                         ["herdr-app"], env=e, cwd=tmp, stdout=log, stderr=log
@@ -205,13 +214,22 @@ def main():
             send(child, "done #1")
             see(child, "done  Inspect the release")
             if APP:
-                # Return to the test space in case the first-run welcome sits above it.
+                send(child, "list all")
+                see(child, "ALL  ·  2 tasks")
+                send(parent, "/todos")
+                see(parent, "Search tasks…")
                 status = j("herdr-app", "status")
-                if status.get("overlays"):
-                    run("herdr-app", "do", "overlay.close", check=False)
+                assert not status["overlays"], (
+                    f"Board is obscured: {status['overlays']}"
+                )
+                assert status["space"] == space, (
+                    "The captured window is not showing the test space."
+                )
                 shot = os.environ.get("HERDR_TODOS_TEST_SHOT")
                 if shot:
                     run("herdr-app", "shot", str(Path(shot).absolute()))
+                run("hc", "keys", parent, "esc")
+                until(lambda: "Search tasks…" not in screen(parent), "Pi board closed")
                 channel = get_channel()
             send(parent, "/todos unshare")
             see(parent, "External access closed")
